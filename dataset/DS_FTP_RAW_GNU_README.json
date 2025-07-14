@@ -1,0 +1,22 @@
+{
+	"name": "DS_FTP_RAW_GNU_README",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_FTP_Raw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FtpServerLocation",
+				"folderPath": "gnu"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
