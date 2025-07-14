@@ -1,0 +1,22 @@
+{
+	"name": "LS_FTP_Raw",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Test FTP ingest using public test server",
+		"annotations": [],
+		"type": "FtpServer",
+		"typeProperties": {
+			"host": "ftp.dlptest.com",
+			"port": 21,
+			"enableSsl": true,
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Basic",
+			"userName": "dlpuser@dlptest.com",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2YTQ2NzFjNy02MzhjLTQwNmYtOGNhZS0xZDYzNWViMTQ2MDYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "MySHIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
