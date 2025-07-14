@@ -14,6 +14,9 @@
 		"LS_FTP_Raw_password": {
 			"value": ""
 		},
+		"LS_SFTP_Raw_password": {
+			"value": ""
+		},
 		"LS_SQL_password": {
 			"value": ""
 		},
@@ -25,6 +28,12 @@
 		},
 		"LS_FTP_Raw_properties_typeProperties_userName": {
 			"value": "anonymous"
+		},
+		"LS_SFTP_Raw_properties_typeProperties_host": {
+			"value": "test.rebex.net"
+		},
+		"LS_SFTP_Raw_properties_typeProperties_userName": {
+			"value": "demo"
 		},
 		"LS_SQL_properties_typeProperties_server": {
 			"value": "sqlingest-server.database.windows.net"
