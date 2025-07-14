@@ -1,0 +1,148 @@
+{
+	"name": "Pipeline_Incremental_Customers",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupLastWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT LastUpdatedDate\n  FROM IncrementalWatermark\n WHERE WatermarkName='CustomerWatermark';\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_CUST_MSTR",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "CopyIncrementalCustomers",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LookupLastWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "@concat(\n  'SELECT * FROM Customers ',\n  'WHERE ModifiedDate > ''',\n  activity('LookupLastWatermark').output.firstRow.LastUpdatedDate,\n  ''''\n)\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE Customers_Incr;  -- if you’re staging\n",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_Customers",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Customers_Incr",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "LookupNewWatermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "CopyIncrementalCustomers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT MAX(ModifiedDate) AS NewWatermark\n  FROM Customers\n WHERE ModifiedDate > '@{activity('LookupLastWatermark').output.firstRow.LastUpdatedDate}'\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Customers",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "SP_UpdateWatermark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "LookupNewWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "usp_UpdateCustomerWatermark"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_SQL",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
