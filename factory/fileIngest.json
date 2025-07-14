@@ -1,0 +1,9 @@
+{
+	"name": "fileIngest",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5c753b85-cca5-4745-8502-25c7bb6bcf03",
+		"tenantId": "43186b84-bccd-4f17-86b6-3f047d782bc5"
+	}
+}
