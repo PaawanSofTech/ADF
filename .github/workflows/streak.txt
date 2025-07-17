@@ -1,0 +1,4 @@
+echo "🌿 Streak started on $(date)" > streak.txt
+git add streak.txt
+git commit -m "Add streak file"
+git push origin main
