@@ -1,8 +1,8 @@
-name: GitHub Streak Keeper
+name: GitHub Streak Chaos
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # Every day at 5 AM UTC (10:30 AM IST)
+    - cron: '0 5 * * *'  # Runs daily at 10:30 AM IST
   workflow_dispatch:
 
 jobs:
@@ -12,15 +12,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Make a dummy update to keep streak
+      - name: Generate commits
         run: |
-          echo "$(date) - 🌱 Keep the streak alive!" >> streak.txt
+          NUM_COMMITS=$(( RANDOM % 26 + 5 ))  # 5 to 30 commits
+          echo "🔁 Will make $NUM_COMMITS commits today"
 
-      - name: Commit and push changes
+          COMMIT_MESSAGES=("Update" "Auto Save" "Greenify" "Fire commit" "Update logs" "Experiment" "Push" "Cleanup" "Routine update")
+
+          for i in $(seq 1 $NUM_COMMITS)
+          do
+            echo "$(date) - Commit #$i" >> streak.txt
+            MSG_INDEX=$(( RANDOM % ${#COMMIT_MESSAGES[@]} ))
+            MSG="${COMMIT_MESSAGES[$MSG_INDEX]} #$i"
+            git add streak.txt
+            git commit -m "$MSG"
+          done
+
+      - name: Push changes
         run: |
           git config --global user.name "Paawan Bot"
           git config --global user.email "bot@users.noreply.github.com"
-          git add streak.txt
-          git commit -m "🟩 Automated commit to keep streak"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/PaawanSofTech/ADF.git
-
