@@ -2,7 +2,7 @@ name: GitHub Streak Chaos
 
 on:
   schedule:
-    - cron: '32 21 * * *'  # 3:02 AM IST (which is 21:32 UTC)
+    - cron: '37 21 * * *'  # 3:07 AM IST
   workflow_dispatch:
 
 jobs:
@@ -12,12 +12,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set Git identity (MUST be before commits)
+        run: |
+          git config --global user.name "Paawan"
+          git config --global user.email "bot@users.noreply.github.com"
+
       - name: Generate commits
         run: |
           NUM_COMMITS=$(( RANDOM % 26 + 5 ))  # 5 to 30 commits
           echo "🔁 Will make $NUM_COMMITS commits today"
 
-          COMMIT_MESSAGES=("Update" "Auto Save" "Greenify" "Fire commit" "Update logs" "Experiment" "Push" "Cleanup" "Routine update")
+          COMMIT_MESSAGES=("🌿 Update" "💾 Auto Save" "🟩 Greenify" "🔥 Fire commit" "🔄 Update logs" "🧪 Experiment" "🚀 Push" "🧹 Cleanup" "💻 Routine update")
 
           for i in $(seq 1 $NUM_COMMITS)
           do
@@ -30,6 +35,4 @@ jobs:
 
       - name: Push changes
         run: |
-          git config --global user.name "Paawan Bot"
-          git config --global user.email "bot@users.noreply.github.com"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/PaawanSofTech/ADF.git
